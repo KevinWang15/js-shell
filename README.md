@@ -67,8 +67,8 @@ sshRoutine(async sh => {
 const sshRoutine = require("js-ssh-routine");
 
 sshRoutine(async sh => {
-  await sh.login(host, {username: "root", password: "123456"});
-  sh(`hostname`);
+  await sh.login("1.2.3.4", {username: "root", password: "123456"});
+  await sh(`hostname`);
 });
 ```
 
@@ -89,9 +89,9 @@ const subRoutine = async (sh, host) => {
 Promise.all(
   hosts.map(host => sshRoutine(sh => subRoutine(sh, host.host)))
 ).then(logs => console.log(
-  console.log(logs.map((log, index) => {
+  logs.map((log, index) => {
     return `>>>>> Host: ${hosts[index].name} (${hosts[index].host})\n${log}\n<<<<<\n`;
-  }).join("\n")))
+  }).join("\n"))
 );
 ```
 
