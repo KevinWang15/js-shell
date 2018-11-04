@@ -3,7 +3,6 @@ const chalk = require("chalk");
 const pty = require('node-pty');
 
 const defer = require('../utils/defer');
-const redactPassword = require("../utils/redactPassword");
 
 /**
  * What shell to use?
@@ -125,55 +124,7 @@ async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
     return deferred.promise;
   };
 
-  const utilCommands = {
-
-    // util function: login to another host
-    login: async (host, {username = null, password = null, port = null, commandFinishIndicator = "ogin"} = {}) => {
-      let cmd = "";
-
-      cmd += "ssh ";
-
-      if (username) {
-        cmd += username + "@";
-      }
-
-      cmd += host;
-
-      if (port) {
-        cmd += " -p " + port;
-      }
-
-      if (password) {
-        await sh(cmd, {commandFinishIndicator: "assword"});
-        return await sh(password, {
-          commandFinishIndicator,
-          overrideLogMessage: (command) => "🔑 " + chalk.gray(redactPassword(command))
-        });
-      } else {
-        return await sh(cmd, {commandFinishIndicator});
-      }
-    },
-
-    // util function: read file (if last x lines is specified, then use `tail`, otherwise use `cat`)
-    readFile: (path, {last = null} = {}) => {
-      if (last) {
-        return sh("tail -" + last + " " + path);
-      } else {
-        return sh("cat " + path);
-      }
-    },
-
-    // util function: exit ssh (used to logout from another server)
-    exit: ({commandFinishIndicator = "closed"} = {}) => {
-      return sh("exit", {commandFinishIndicator});
-    },
-
-    // kill the pty process
-    destroy: () => {
-      ptyProcess.kill();
-    }
-
-  };
+  const utilCommands = require("./commands")(sh, ptyProcess);
 
   // generate captureOutput version of command
   sh.captureOutput = (cmd, options) => sh(cmd, {...options, captureOutput: true});
