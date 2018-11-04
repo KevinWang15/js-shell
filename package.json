@@ -1,11 +1,9 @@
 {
   "name": "js-ssh-routine",
   "version": "0.1.0",
-  "description": "",
+  "description": "Automate your ssh with JavaScript.",
   "main": "index.js",
   "scripts": {},
-  "keywords": [],
-  "author": "",
   "license": "MIT",
   "devDependencies": {},
   "dependencies": {

@@ -1,6 +1,6 @@
 # js-ssh-routine
 
-Automate your routine ssh tasks with JavaScript.
+Automate your ssh with JavaScript.
 
 # Note
 
@@ -119,7 +119,7 @@ It relies heavily on [node-pty](https://github.com/Microsoft/node-pty).
 
 # You may also be interested
 
-* [log-viewer](): hackable `nw.js` log viewer. `node collect-logs.js | log-viewer`
+* [log-viewer](https://github.com/KevinWang15/log-viewer): Hackable log viewer built with `nw.js` and `react`.
 
 # TODO
 - [ ] Error handling
