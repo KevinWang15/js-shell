@@ -142,14 +142,17 @@ function enableUtilCommands(sh, ptyProcess) {
 
   // generate captureOutput version of command
   sh.captureOutput = (cmd, options) => sh(cmd, {...options, captureOutput: true});
+  sh.printOutput = (cmd, options) => sh(cmd, {...options, captureOutput: false});
 
   // generate captureOutput version of util command
   const utilCommandsWithCaptureOutput = require("./commands")(sh.captureOutput, ptyProcess);
+  const utilCommandsWithPrintOutput = require("./commands")(sh.printOutput, ptyProcess);
 
   Object.keys(utilCommands).forEach(commandName => {
     // enable util command
     sh[commandName] = utilCommands[commandName];
     sh[commandName].captureOutput = utilCommandsWithCaptureOutput[commandName];
+    sh[commandName].printOutput = utilCommandsWithPrintOutput[commandName];
   });
 }
 

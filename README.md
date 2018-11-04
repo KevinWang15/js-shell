@@ -53,7 +53,10 @@ jsShell(async sh => {
 });
 ```
 
-## Capture command output 
+## Capture command output
+
+You can append `.captureOutput` to `sh` or any `sh.command` to make it return the output value instead of printing it to STDOUT.
+
 ```javascript
 const jsShell = require("js-shell");
 
@@ -61,6 +64,20 @@ jsShell(async sh => {
   let output = await sh.captureOutput(`whoami`);
   console.log(output);
 });
+```
+
+## Print command output
+
+Unless specified with `defaultStdOutHandling`, the default behavior is to print the output of the command.
+
+You can use `.printOutput` to print the output no matter what `defaultStdOutHandling` says.
+
+```javascript
+jsShell(async sh => {
+  for (let i = 0; i < 10; i++) {
+    await sh.printOutput(`echo Hello World ${i}`);
+  }
+}, {echoOff: true, shellRttDelay: 10, defaultStdOutHandling: "capture"})
 ```
 
 ## Log into another host
