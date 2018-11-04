@@ -106,6 +106,11 @@ It relies heavily on [node-pty](https://github.com/Microsoft/node-pty).
 
 * [log-viewer](): hackable `nw.js` log viewer. `node collect-logs.js | log-viewer`
 
+# TODO
+- [ ] Error handling
+- [ ] Windows compatibility
+- [ ] More utils
+
 # License
 
 MIT
