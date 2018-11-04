@@ -36,7 +36,7 @@ async function makeShell({echoOff = false, shellRttDelay = SHELL_RTT_DELAY, defa
   const subscribeData = makePtyStdoutSubscriber(ptyProcess);
 
   // Core function: Execute command (send to STDIN) in shell.
-  const sh = (command, {commandFinishIndicator = null, overrideLogMessage = false, captureOutput = defaultStdOutHandling || false} = {}) => {
+  const sh = (command, {commandFinishIndicator = null, overrideLogMessage = false, captureOutput = defaultStdOutHandling === "capture"} = {}) => {
     let deferred = defer();
 
     if (!echoOff) {
