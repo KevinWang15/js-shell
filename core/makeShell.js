@@ -49,7 +49,7 @@ async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
         deferred.resolve(data);
       } else {
         console.log(data);
-        deferred.resolve(data);
+        deferred.resolve();
       }
     };
 
