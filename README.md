@@ -26,8 +26,9 @@ It occurs to me that Node.js and shell can play together and compliment each oth
 
 # Installation
 
-// TODO
-
+```bash
+npm i --save https://github.com/KevinWang15/js-ssh-routine.git
+```
 # DEMO
 
 ## Simple .sh
