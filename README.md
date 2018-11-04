@@ -114,12 +114,13 @@ sshRoutine(async sh => {
 # How it works
 
 As you may already have guessed, `js-ssh-routine` spawns a `sh` process and communicates with it through `STDIN` and `STDOUT`. 
-
 It relies heavily on [node-pty](https://github.com/Microsoft/node-pty).
 
 # You may also be interested
 
 * [log-viewer](https://github.com/KevinWang15/log-viewer): Hackable log viewer built with `nw.js` and `react`.
+  
+  So that you can do: `node collect-logs.routine.js | log-viewer`
 
 # TODO
 - [ ] Error handling
