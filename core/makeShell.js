@@ -33,16 +33,7 @@ async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
   });
 
   // Pub Sub for the shell's STDOUT
-  const subscribers = [];
-  const subscribeData = (callback) => {
-    subscribers.push(callback);
-    return () => {
-      subscribers.splice(subscribers.indexOf(callback), 1);
-    }
-  };
-  ptyProcess.on('data', function (data) {
-    subscribers.forEach(callback => callback(data));
-  });
+  const subscribeData = makePtyStdoutSubscriber(ptyProcess);
 
   // Core function: Execute command (send to STDIN) in shell.
   const sh = (command, {commandFinishIndicator = null, overrideLogMessage = false, captureOutput = false} = {}) => {
@@ -51,14 +42,7 @@ async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
     // (console.error is to print it in STDERR, so that we can do "node script.js > file.log" without also writing those logs to file)
 
     if (!echoOff) {
-      let message;
-      if (overrideLogMessage) {
-        message = overrideLogMessage(command);
-      } else {
-        message = "⏳  " + chalk.blue(command.trim());
-      }
-      console.error(chalk.magenta(`[PTY ${localPtyNo}] `) + message);
-
+      echoCommand(command, localPtyNo, overrideLogMessage);
     }
 
 
@@ -84,13 +68,13 @@ async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
           ptyProcess.write("\n");
 
           // subscribe to new STDOUT data
-          let unsub = subscribeData((data) => {
+          let unsubscribeData = subscribeData((data) => {
             // append to stdOutLogBuffer so we can access the result of the command later
             stdOutLogBuffer += data;
 
             // if finish indicator is captured in the output, it means the command has finished executing
             if (outputCommandFinishIndicator && stdOutLogBuffer.indexOf(outputCommandFinishIndicator) >= 0) {
-              unsub(); // send updates of STDOUT no more
+              unsubscribeData(); // send updates of STDOUT no more
               resolve(stdOutLogBuffer);
             }
 
@@ -124,16 +108,50 @@ async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
     return deferred.promise;
   };
 
+  enableUtilCommands(sh, ptyProcess);
+  return sh;
+}
+
+// Pub Sub maker
+function makePtyStdoutSubscriber(ptyProcess) {
+  const subscribers = [];
+
+  const subscribeData = (callback) => {
+    subscribers.push(callback);
+    return () => {
+      subscribers.splice(subscribers.indexOf(callback), 1);
+    }
+  };
+
+  ptyProcess.on('data', function (data) {
+    subscribers.forEach(callback => callback(data));
+  });
+  return subscribeData;
+}
+
+// Echo what is about to execute
+function echoCommand(command, localPtyNo, overrideLogMessage) {
+  let message;
+  if (overrideLogMessage) {
+    message = overrideLogMessage(command);
+  } else {
+    message = "⏳  " + chalk.blue(command.trim());
+  }
+  console.error(chalk.magenta(`[PTY ${localPtyNo}] `) + message);
+}
+
+// Install util commands from ./commands and make their .captureOutput version
+function enableUtilCommands(sh, ptyProcess) {
   const utilCommands = require("./commands")(sh, ptyProcess);
 
   // generate captureOutput version of command
   sh.captureOutput = (cmd, options) => sh(cmd, {...options, captureOutput: true});
   Object.keys(utilCommands).forEach(commandName => {
+    // enable util command
     sh[commandName] = utilCommands[commandName];
+    // generate captureOutput version of util command
     sh[commandName].captureOutput = (cmd, options) => sh[commandName](cmd, {...options, captureOutput: true});
   });
-
-  return sh;
 }
 
 module.exports = makeShell;
