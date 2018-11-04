@@ -10,6 +10,7 @@ const subRoutine = async (sh, host) => {
   return sh.readFile.captureOutput("test.log", {last: 1000});
 };
 
+// running multiple shells in parallel!
 Promise.all(
   hosts.map(host => sshRoutine(sh => subRoutine(sh, host.host)))
 ).then(logs => console.log(

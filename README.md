@@ -17,7 +17,7 @@ However, it still has some limitations.
 
 For example, it would be very difficult to log into another server (which required password auth) and do routine operations there.
 It would also be difficult to automate interactive programs.
-How are you supposed to do lower level operations / implement complicated data structures / debug with confidence?
+How are you supposed to do lower level operations / implement complicated data structures / run multiple shells in parallel / debug with confidence?
 What if I come from the JavaScript world and just don't like to write `.sh` files.
 
 It occurs to me that Node.js and shell can play together and compliment each other really well.
@@ -86,6 +86,7 @@ const subRoutine = async (sh, host) => {
   return sh.readFile.captureOutput("test.log", {last: 1000});
 };
 
+// running multiple shells in parallel!
 Promise.all(
   hosts.map(host => sshRoutine(sh => subRoutine(sh, host.host)))
 ).then(logs => console.log(
