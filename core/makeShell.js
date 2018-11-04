@@ -21,8 +21,8 @@ let ptyNo = 0;
  */
 const SSH_RTT_DELAY = 200;
 
-// TODO: refactor this file, split up the core and all the util commands
 async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
+  // increment ptyNo
   let localPtyNo = ptyNo;
   ptyNo++;
 
@@ -37,16 +37,11 @@ async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
 
   // Core function: Execute command (send to STDIN) in shell.
   const sh = (command, {commandFinishIndicator = null, overrideLogMessage = false, captureOutput = false} = {}) => {
-
-    // Print log
-    // (console.error is to print it in STDERR, so that we can do "node script.js > file.log" without also writing those logs to file)
+    let deferred = defer();
 
     if (!echoOff) {
       echoCommand(command, localPtyNo, overrideLogMessage);
     }
-
-
-    let deferred = defer();
 
     // on command finish, print out the result or resolve the promise with result
     const onCommandDone = (data) => {
@@ -58,7 +53,7 @@ async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
       }
     };
 
-    const execCommand = (command, {outputCommandFinishIndicator = null} = {}) => new Promise(resolve => setTimeout(() => {
+    const execCommand = (command, {outputCommandFinishIndicator = null} = {}) => new Promise(resolve => {
         // write to STDIN
         ptyProcess.write(command);
 
@@ -80,7 +75,7 @@ async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
 
           })
         }, sshRttDelay);
-      }, sshRttDelay) //TODO: what is this setTimeout for?
+      }
     );
 
 
@@ -89,7 +84,7 @@ async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
       let outputCommandFinishIndicator = "ssh_route_cmd_finish_" + Math.random().toString().substr(2);
       setTimeout(() => {
         execCommand(
-          `${command}; echo ${outputCommandFinishIndicator.substr(0, 1) + "\\" + outputCommandFinishIndicator.substr(1)}`, //TODO: is the \\ still necessary?
+          `${command}; echo ${outputCommandFinishIndicator}`,
           {outputCommandFinishIndicator}
         ).then(stdoutData => {
           // now the command is finished, remove the random data we made it echo.
@@ -130,6 +125,7 @@ function makePtyStdoutSubscriber(ptyProcess) {
 }
 
 // Echo what is about to execute
+// (console.error is to print it in STDERR, so that we can do "node script.js > file.log" without also writing those logs to file)
 function echoCommand(command, localPtyNo, overrideLogMessage) {
   let message;
   if (overrideLogMessage) {
