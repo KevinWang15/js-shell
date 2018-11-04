@@ -1,12 +1,12 @@
 # js-shell
 
-Automate your ssh with JavaScript.
+Automate your shell with JavaScript.
 
 # Note
 
 This is only a POC project. It may come with a lot of bugs, so **do not use it in any mission-critical systems.**
 
-You should supervise it each time it is run. In other words, run your ssh routines manually. It's too dangerous to let `cronjob` and such run ssh routines automatically without supervision at the current stage.
+You should supervise it each time it is run. In other words, run your shell routines manually. It's too dangerous to let `cronjob` and such run shell routines automatically without supervision at the current stage.
 
 If you find a bug, please submit an issue. PRs are welcome!
 
@@ -100,7 +100,7 @@ Promise.all(
 # jsShell options
 
 * `echoOff`: whether to turn off command echoing.
-* `sshRttDelay`: expected round-trip time of the shell, in order to make sure the results are correct.
+* `shellRttDelay`: expected round-trip time of the shell (especially when you ssh to other machines), in order to make sure the results are correct.
 
 ## DEMO
 ```javascript
@@ -108,7 +108,7 @@ jsShell(async sh => {
   for (let i = 0; i < 10; i++) {
     await sh(`echo Hello World ${i}`);
   }
-}, {echoOff: true, sshRttDelay: 10})
+}, {echoOff: true, shellRttDelay: 10})
 ```
 
 # How it works

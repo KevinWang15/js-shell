@@ -19,9 +19,9 @@ let ptyNo = 0;
  *     to avoid capturing the echoing of shell
  *     (what you sent to STDIN being sent back to you in STDOUT)
  */
-const SSH_RTT_DELAY = 200;
+const SHELL_RTT_DELAY = 200;
 
-async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
+async function makeShell({echoOff = false, shellRttDelay = SHELL_RTT_DELAY} = {}) {
   // increment ptyNo
   let localPtyNo = ptyNo;
   ptyNo++;
@@ -74,14 +74,14 @@ async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
             }
 
           })
-        }, sshRttDelay);
+        }, shellRttDelay);
       }
     );
 
 
     if (!commandFinishIndicator) {
       // if no command finish indicator is specified, we will use a technique: let it echo some random data after the command is finished.
-      let outputCommandFinishIndicator = "ssh_route_cmd_finish_" + Math.random().toString().substr(2);
+      let outputCommandFinishIndicator = "shell_cmd_finish_" + Math.random().toString().substr(2);
       setTimeout(() => {
         execCommand(
           `${command}; echo ${outputCommandFinishIndicator}`,

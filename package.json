@@ -1,7 +1,7 @@
 {
   "name": "js-shell",
   "version": "0.1.0",
-  "description": "Automate your ssh with JavaScript.",
+  "description": "Automate your shell with JavaScript.",
   "main": "index.js",
   "scripts": {},
   "license": "MIT",
