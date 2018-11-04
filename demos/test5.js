@@ -6,7 +6,7 @@ const hosts = [
 ];
 
 const routine = async (sh, host) => {
-  await sh.login.captureOutput(host, {username: "root", password: "123456", port: 2022});
+  await sh.ssh.captureOutput(host, {username: "root", password: "123456", port: 2022});
   return await sh.readFile.captureOutput("test.log", {last: 1000});
 };
 

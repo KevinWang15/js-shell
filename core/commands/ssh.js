@@ -1,7 +1,7 @@
 const chalk = require("chalk");
 const redactPassword = require("../../utils/redactPassword");
 
-// util function: login to another host
+// util function: ssh to another host
 module.exports = sh => async (host, {username = null, password = null, port = null, commandFinishIndicator = "ogin"} = {}) => {
   let cmd = "";
 
