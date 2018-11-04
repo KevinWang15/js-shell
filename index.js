@@ -2,11 +2,11 @@ const sleep = require("./utils/sleep");
 const makeShell = require("./core/makeShell");
 
 
-const startRoutine = async function (callback, delay = 0) {
+const startRoutine = async function (callback, {delay = 0, echoOff = false, sshRttDelay} = {}) {
   if (delay) {
     await sleep(delay);
   }
-  let shell = await makeShell();
+  let shell = await makeShell({echoOff, sshRttDelay});
   let value = await callback(shell);
   shell.destroy();
   return value;

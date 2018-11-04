@@ -23,7 +23,7 @@ let ptyNo = 0;
 const SSH_RTT_DELAY = 200;
 
 // TODO: refactor this file, split up the core and all the util commands
-async function makeShell() {
+async function makeShell({echoOff = false, sshRttDelay = SSH_RTT_DELAY} = {}) {
   let localPtyNo = ptyNo;
   ptyNo++;
 
@@ -47,16 +47,20 @@ async function makeShell() {
 
   // Core function: Execute command (send to STDIN) in shell.
   const sh = (command, {commandFinishIndicator = null, overrideLogMessage = false, captureOutput = false} = {}) => {
-    let message;
 
     // Print log
     // (console.error is to print it in STDERR, so that we can do "node script.js > file.log" without also writing those logs to file)
-    if (overrideLogMessage) {
-      message = overrideLogMessage(command);
-    } else {
-      message = "⏳  " + chalk.blue(command.trim());
+
+    if (!echoOff) {
+      let message;
+      if (overrideLogMessage) {
+        message = overrideLogMessage(command);
+      } else {
+        message = "⏳  " + chalk.blue(command.trim());
+      }
+      console.error(chalk.magenta(`[PTY ${localPtyNo}] `) + message);
+
     }
-    console.error(chalk.magenta(`[PTY ${localPtyNo}] `) + message);
 
 
     let deferred = defer();
@@ -92,8 +96,8 @@ async function makeShell() {
             }
 
           })
-        }, SSH_RTT_DELAY);
-      }, SSH_RTT_DELAY) //TODO: what is this setTimeout for?
+        }, sshRttDelay);
+      }, sshRttDelay) //TODO: what is this setTimeout for?
     );
 
 

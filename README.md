@@ -95,6 +95,19 @@ Promise.all(
 );
 ```
 
+# sshRoutine options
+
+* `echoOff`: whether to turn off command echoing.
+* `sshRttDelay`: expected round-trip time of the shell, in order to make sure the results are correct.
+
+## DEMO
+```javascript
+sshRoutine(async sh => {
+  for (let i = 0; i < 10; i++) {
+    await sh(`echo Hello World ${i}`);
+  }
+}, {echoOff: true, sshRttDelay: 10})
+```
 
 # How it works
 
