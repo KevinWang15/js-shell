@@ -101,14 +101,16 @@ Promise.all(
 
 * `echoOff`: whether to turn off command echoing.
 * `shellRttDelay`: expected round-trip time of the shell (especially when you ssh to other machines), in order to make sure the results are correct.
+* `defaultStdOutHandling`: "print" | "capture". `print` prints the STDOUT of the command to STDOUT, while `capture` saves it as a variable and returns it. Defaults to `print`.
 
 ## DEMO
 ```javascript
 jsShell(async sh => {
+  let results = [];
   for (let i = 0; i < 10; i++) {
-    await sh(`echo Hello World ${i}`);
+    results.push(await sh(`echo Hello World ${i}`));
   }
-}, {echoOff: true, shellRttDelay: 10})
+}, {echoOff: true, shellRttDelay: 10, defaultStdOutHandling: "capture"})
 ```
 
 # How it works

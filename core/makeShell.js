@@ -21,7 +21,7 @@ let ptyNo = 0;
  */
 const SHELL_RTT_DELAY = 200;
 
-async function makeShell({echoOff = false, shellRttDelay = SHELL_RTT_DELAY} = {}) {
+async function makeShell({echoOff = false, shellRttDelay = SHELL_RTT_DELAY, defaultStdOutHandling = undefined} = {}) {
   // increment ptyNo
   let localPtyNo = ptyNo;
   ptyNo++;
@@ -36,7 +36,7 @@ async function makeShell({echoOff = false, shellRttDelay = SHELL_RTT_DELAY} = {}
   const subscribeData = makePtyStdoutSubscriber(ptyProcess);
 
   // Core function: Execute command (send to STDIN) in shell.
-  const sh = (command, {commandFinishIndicator = null, overrideLogMessage = false, captureOutput = false} = {}) => {
+  const sh = (command, {commandFinishIndicator = null, overrideLogMessage = false, captureOutput = defaultStdOutHandling || false} = {}) => {
     let deferred = defer();
 
     if (!echoOff) {
