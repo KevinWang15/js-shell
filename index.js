@@ -2,7 +2,7 @@ const sleep = require("./utils/sleep");
 const makeShell = require("./core/makeShell");
 
 
-const sshRoutine = async function (callback, {delay = 0, echoOff = false, sshRttDelay} = {}) {
+const jsShell = async function (callback, {delay = 0, echoOff = false, sshRttDelay} = {}) {
   if (delay) {
     await sleep(delay);
   }
@@ -12,4 +12,4 @@ const sshRoutine = async function (callback, {delay = 0, echoOff = false, sshRtt
   return value;
 };
 
-module.exports = sshRoutine;
+module.exports = jsShell;

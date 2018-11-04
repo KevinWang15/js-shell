@@ -33,9 +33,9 @@ npm i --save https://github.com/KevinWang15/js-shell.git
 
 ## Simple .sh
 ```javascript
-const sshRoutine = require("js-shell");
+const jsShell = require("js-shell");
 
-sshRoutine(async sh => {
+jsShell(async sh => {
   await sh("echo Hello World");
   await sh("cd /");
   await sh("pwd");
@@ -44,9 +44,9 @@ sshRoutine(async sh => {
 
 ## With Node.js control flow
 ```javascript
-const sshRoutine = require("js-shell");
+const jsShell = require("js-shell");
 
-sshRoutine(async sh => {
+jsShell(async sh => {
   for (let i = 0; i < 10; i++) {
     await sh(`echo Hello World ${i}`);
   }
@@ -55,9 +55,9 @@ sshRoutine(async sh => {
 
 ## Capture command output 
 ```javascript
-const sshRoutine = require("js-shell");
+const jsShell = require("js-shell");
 
-sshRoutine(async sh => {
+jsShell(async sh => {
   let output = await sh.captureOutput(`whoami`);
   console.log(output);
 });
@@ -65,9 +65,9 @@ sshRoutine(async sh => {
 
 ## Log into another host
 ```javascript
-const sshRoutine = require("js-shell");
+const jsShell = require("js-shell");
 
-sshRoutine(async sh => {
+jsShell(async sh => {
   await sh.login("1.2.3.4", {username: "root", password: "123456"});
   await sh(`hostname`);
 });
@@ -75,21 +75,21 @@ sshRoutine(async sh => {
 
 ## Fetch logs from multiple hosts
 ```javascript
-const sshRoutine = require("js-shell");
+const jsShell = require("js-shell");
 
 const hosts = [
   {name: "A", host: "1.2.3.4"},
   {name: "B", host: "2.3.4.5"},
 ];
 
-const subRoutine = async (sh, host) => {
+const routine = async (sh, host) => {
   await sh.login.captureOutput(host, {username: "root", password: "123456", port: 2022});
   return await sh.readFile.captureOutput("test.log", {last: 1000});
 };
 
 // running multiple shells in parallel!
 Promise.all(
-  hosts.map(host => sshRoutine(sh => subRoutine(sh, host.host)))
+  hosts.map(host => jsShell(sh => routine(sh, host.host)))
 ).then(logs => console.log(
   logs.map((log, index) => {
     return `>>>>> Host: ${hosts[index].name} (${hosts[index].host})\n${log}\n<<<<<\n`;
@@ -97,14 +97,14 @@ Promise.all(
 );
 ```
 
-# sshRoutine options
+# jsShell options
 
 * `echoOff`: whether to turn off command echoing.
 * `sshRttDelay`: expected round-trip time of the shell, in order to make sure the results are correct.
 
 ## DEMO
 ```javascript
-sshRoutine(async sh => {
+jsShell(async sh => {
   for (let i = 0; i < 10; i++) {
     await sh(`echo Hello World ${i}`);
   }

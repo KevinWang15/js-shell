@@ -1,6 +1,6 @@
-const sshRoutine = require("../index");
+const jsShell = require("../index");
 
-sshRoutine(async sh => {
+jsShell(async sh => {
   await sh("echo Hello World");
   await sh("cd /");
   await sh("pwd");

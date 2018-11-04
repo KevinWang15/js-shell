@@ -1,6 +1,6 @@
-const sshRoutine = require("../index");
+const jsShell = require("../index");
 
-sshRoutine(async sh => {
+jsShell(async sh => {
   await sh.login("1.2.3.4", {username: "root", password: "123456"});
   await sh(`hostname`);
 });
