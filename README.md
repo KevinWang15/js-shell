@@ -83,7 +83,7 @@ const hosts = [
 
 const subRoutine = async (sh, host) => {
   await sh.login.captureOutput(host, {username: "root", password: "123456", port: 2022});
-  return sh.readFile.captureOutput("test.log", {last: 1000});
+  return await sh.readFile.captureOutput("test.log", {last: 1000});
 };
 
 // running multiple shells in parallel!
