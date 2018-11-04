@@ -1,5 +1,5 @@
 {
-  "name": "js-ssh-routine",
+  "name": "js-shell",
   "version": "0.1.0",
   "description": "Automate your ssh with JavaScript.",
   "main": "index.js",

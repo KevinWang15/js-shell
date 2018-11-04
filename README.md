@@ -1,4 +1,4 @@
-# js-ssh-routine
+# js-shell
 
 Automate your ssh with JavaScript.
 
@@ -22,18 +22,18 @@ What if I come from the JavaScript world and just don't like to write `.sh` file
 
 It occurs to me that Node.js and shell can play together and compliment each other really well.
 
-`js-ssh-routine` is like writing shell scripts with Node.js, the best of both worlds.
+`js-shell` is like writing shell scripts with Node.js, the best of both worlds.
 
 # Installation
 
 ```bash
-npm i --save https://github.com/KevinWang15/js-ssh-routine.git
+npm i --save https://github.com/KevinWang15/js-shell.git
 ```
 # DEMO
 
 ## Simple .sh
 ```javascript
-const sshRoutine = require("js-ssh-routine");
+const sshRoutine = require("js-shell");
 
 sshRoutine(async sh => {
   await sh("echo Hello World");
@@ -44,7 +44,7 @@ sshRoutine(async sh => {
 
 ## With Node.js control flow
 ```javascript
-const sshRoutine = require("js-ssh-routine");
+const sshRoutine = require("js-shell");
 
 sshRoutine(async sh => {
   for (let i = 0; i < 10; i++) {
@@ -55,7 +55,7 @@ sshRoutine(async sh => {
 
 ## Capture command output 
 ```javascript
-const sshRoutine = require("js-ssh-routine");
+const sshRoutine = require("js-shell");
 
 sshRoutine(async sh => {
   let output = await sh.captureOutput(`whoami`);
@@ -65,7 +65,7 @@ sshRoutine(async sh => {
 
 ## Log into another host
 ```javascript
-const sshRoutine = require("js-ssh-routine");
+const sshRoutine = require("js-shell");
 
 sshRoutine(async sh => {
   await sh.login("1.2.3.4", {username: "root", password: "123456"});
@@ -75,7 +75,7 @@ sshRoutine(async sh => {
 
 ## Fetch logs from multiple hosts
 ```javascript
-const sshRoutine = require("js-ssh-routine");
+const sshRoutine = require("js-shell");
 
 const hosts = [
   {name: "A", host: "1.2.3.4"},
@@ -113,7 +113,7 @@ sshRoutine(async sh => {
 
 # How it works
 
-As you may already have guessed, `js-ssh-routine` spawns a `sh` process and communicates with it through `STDIN` and `STDOUT`. 
+As you may already have guessed, `js-shell` spawns a `sh` process and communicates with it through `STDIN` and `STDOUT`.
 It relies heavily on [node-pty](https://github.com/Microsoft/node-pty).
 
 # You may also be interested
