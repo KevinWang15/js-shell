@@ -22,7 +22,7 @@ let ptyNo = 0;
  */
 const SSH_RTT_DELAY = 200;
 
-// TODO: refactor this file, split up the core and all the util functions
+// TODO: refactor this file, split up the core and all the util commands
 async function makeShell() {
   let localPtyNo = ptyNo;
   ptyNo++;
@@ -46,7 +46,7 @@ async function makeShell() {
   });
 
   // Core function: Execute command (send to STDIN) in shell.
-  const sh = (command, {commandFinishIndicator = null, overrideLogMessage = false} = {}) => {
+  const sh = (command, {commandFinishIndicator = null, overrideLogMessage = false, captureOutput = false} = {}) => {
     let message;
 
     // Print log
@@ -63,8 +63,12 @@ async function makeShell() {
 
     // on command finish, print out the result or resolve the promise with result
     const onCommandDone = (data) => {
-      console.log(data);
-      deferred.resolve(data);
+      if (captureOutput) {
+        deferred.resolve(data);
+      } else {
+        console.log(data);
+        deferred.resolve(data);
+      }
     };
 
     const execCommand = (command, {outputCommandFinishIndicator = null} = {}) => new Promise(resolve => setTimeout(() => {
@@ -117,51 +121,62 @@ async function makeShell() {
     return deferred.promise;
   };
 
-  // util function: login to another host
-  sh.login = async (host, {username = null, password = null, port = null, commandFinishIndicator = "ogin"} = {}) => {
-    let cmd = "";
+  const utilCommands = {
 
-    cmd += "ssh ";
+    // util function: login to another host
+    login: async (host, {username = null, password = null, port = null, commandFinishIndicator = "ogin"} = {}) => {
+      let cmd = "";
 
-    if (username) {
-      cmd += username + "@";
+      cmd += "ssh ";
+
+      if (username) {
+        cmd += username + "@";
+      }
+
+      cmd += host;
+
+      if (port) {
+        cmd += " -p " + port;
+      }
+
+      if (password) {
+        await sh(cmd, {commandFinishIndicator: "assword"});
+        return await sh(password, {
+          commandFinishIndicator,
+          overrideLogMessage: (command) => "🔑 " + chalk.gray(redactPassword(command))
+        });
+      } else {
+        return await sh(cmd, {commandFinishIndicator});
+      }
+    },
+
+    // util function: read file (if last x lines is specified, then use `tail`, otherwise use `cat`)
+    readFile: (path, {last = null} = {}) => {
+      if (last) {
+        return sh("tail -" + last + " " + path);
+      } else {
+        return sh("cat " + path);
+      }
+    },
+
+    // util function: exit ssh (used to logout from another server)
+    exit: ({commandFinishIndicator = "closed"} = {}) => {
+      return sh("exit", {commandFinishIndicator});
+    },
+
+    // kill the pty process
+    destroy: () => {
+      ptyProcess.kill();
     }
 
-    cmd += host;
-
-    if (port) {
-      cmd += " -p " + port;
-    }
-
-    if (password) {
-      await sh(cmd, {commandFinishIndicator: "assword"});
-      return await sh(password, {
-        commandFinishIndicator,
-        overrideLogMessage: (command) => "🔑 " + chalk.gray(redactPassword(command))
-      });
-    } else {
-      return await sh(cmd, {commandFinishIndicator});
-    }
   };
 
-  // util function: read file (if last x lines is specified, then use `tail`, otherwise use `cat`)
-  sh.readFile = (path, {last = null} = {}) => {
-    if (last) {
-      return sh("tail -" + last + " " + path);
-    } else {
-      return sh("cat " + path);
-    }
-  };
-
-  // util function: exit ssh (used to logout from another server)
-  sh.exit = ({commandFinishIndicator = "closed"} = {}) => {
-    return sh("exit", {commandFinishIndicator});
-  };
-
-  // kill the pty process
-  sh.destroy = () => {
-    ptyProcess.kill();
-  };
+  // generate captureOutput version of command
+  sh.captureOutput = (cmd, options) => sh(cmd, {...options, captureOutput: true});
+  Object.keys(utilCommands).forEach(commandName => {
+    sh[commandName] = utilCommands[commandName];
+    sh[commandName].captureOutput = (cmd, options) => sh[commandName](cmd, {...options, captureOutput: true});
+  });
 
   return sh;
 }
