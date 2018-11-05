@@ -13,16 +13,19 @@ If you find a bug, please submit an issue. PRs are welcome!
 # Purpose
 
 Writing a `.sh` file is sufficient for most of the tasks. 
-However, it still has some limitations.
+However, shell alone still has some limitations.
 
 For example, it would be very difficult to log into another server (which required password auth) and do routine operations there.
 It would also be difficult to automate interactive programs.
 How are you supposed to do lower level operations / implement complicated data structures / run multiple shells in parallel / debug with confidence?
-What if I come from the JavaScript world and just don't like to write `.sh` files.
 
-It occurs to me that Node.js and shell can play together and compliment each other really well.
+It occurs to me that I can solve these problems by having a Node.js program manipulate the STDIN and read from the STDOUT of a shell. What's more, by blending Node.js and shell, the automation script can also benefit from all the technologies from the Node.js world! Shell and Node.js can compliment each other really well. 
 
-`js-shell` is like writing shell scripts with Node.js, the best of both worlds.
+Now you can even write shell scripts with Node.js, which may feel good for people who generally write JS and seldom write shell (the `for` and `if`s in shell can seem a little obscured for JS programmers, now you can write `if (fs.existsSync(..)){}`).
+
+# Why another JavaScript & shell project?
+
+What makes it different from other JavaScript & shell projects is that this project spawns a shell process in the background and communicates with it through `STDIN` and `STDOUT` (it relies heavily on [node-pty](https://github.com/Microsoft/node-pty)). The two way communication can go on for as long as necessary. It makes possible use cases such as asking a user for OTP when requested in the shell and using that new password to log in OTP-protected machines. If the OTP is wrong, it can simply ask the user again and try again, using the same shell, without destroying the current state and starting everything over again. To my knowledge, other projects cannot achieve this.
 
 # Installation
 
@@ -129,11 +132,6 @@ jsShell(async sh => {
   }
 }, {echoOff: true, shellRttDelay: 10, defaultStdOutHandling: "capture"})
 ```
-
-# How it works
-
-As you may already have guessed, `js-shell` spawns a `sh` process and communicates with it through `STDIN` and `STDOUT`.
-It relies heavily on [node-pty](https://github.com/Microsoft/node-pty).
 
 # You may also be interested
 
